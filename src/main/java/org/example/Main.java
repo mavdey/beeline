@@ -1,8 +1,6 @@
 package org.example;
 
-import org.example.handlers.AddHandler;
-import org.example.handlers.DeleteHandler;
-import org.example.handlers.GetHandler;
+import org.example.handlers.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -12,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Main {
-    static Queue<User> users = new ConcurrentLinkedQueue<>();
     static Map<String, Queue<String[]>> queueMap = new ConcurrentHashMap<>();
     static Map<String, String[]> fileFieldsMap = new HashMap<>();
 
@@ -48,8 +45,6 @@ public class Main {
             server.getServer().createContext("/get/%s".formatted(name), new GetHandler(queueMap.get(name),
                     fileFieldsMap.get(name)));
         }
-
-
         server.start();
     }
 
@@ -69,6 +64,5 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
