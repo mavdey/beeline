@@ -7,14 +7,14 @@ import java.io.*;
 import java.util.Collections;
 import java.util.Queue;
 
-public class AddHandler implements HttpHandler {
+public class AddWithoutSaveHandler implements HttpHandler {
 
     Queue<String[]> queue;
     String[] fieldsName;
     File file;
 
 
-    public AddHandler(Queue<String[]> queue, String[] fieldsName, File file) {
+    public AddWithoutSaveHandler(Queue<String[]> queue, String[] fieldsName, File file) {
         this.queue = queue;
         this.fieldsName = fieldsName;
         this.file = file;
@@ -25,7 +25,6 @@ public class AddHandler implements HttpHandler {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody()))) {
             String[] s = reader.readLine().split(";");
             queue.add(s);
-            writeToFile(String.join(";", s));
         } catch (IOException | RuntimeException e) {
             String response = "Error";
             exchange.sendResponseHeaders(400, response.length());
@@ -46,13 +45,5 @@ public class AddHandler implements HttpHandler {
         os.write(response.getBytes());
         os.flush();
         os.close();
-    }
-
-    private synchronized void writeToFile(String str) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
-            writer.write(str + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -3,8 +3,7 @@ package org.example.handlers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Collections;
 import java.util.Queue;
 
@@ -12,10 +11,12 @@ public class DeleteHandler implements HttpHandler {
 
     Queue<String[]> queue;
     String[] fieldsName;
+    File file;
 
-    public DeleteHandler(Queue<String[]> queue, String[] fieldsName) {
+    public DeleteHandler(Queue<String[]> queue, String[] fieldsName, File file) {
         this.queue = queue;
         this.fieldsName = fieldsName;
+        this.file = file;
     }
 
     @Override
@@ -48,5 +49,20 @@ public class DeleteHandler implements HttpHandler {
         os.write(response.getBytes());
         os.flush();
         os.close();
+//        writeToFile();
+    }
+
+    private synchronized void writeToFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+            queue.forEach(strings -> {
+                try {
+                    writer.write(String.join(";", strings) + "\n");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
